@@ -2,38 +2,25 @@
 #-*- coding=utf-8 -*-
 
 import os
-import datetime
-import threading
-
-def time_it(func):
-    def do(*nkwarg, **kwargs):
-        start_time= datetime.datetime.now()
-        func(*nkwarg, **kwargs)
-        end_time = datetime.datetime.now()
-        return end_time - start_time 
-return do
-
-def multiple_threading(func):
-    threads= []
-    base_path = os.path.abspath('.')
-    def do(command):
-        """docstring for do"""
-        for i in range(20):
-            thread = threading.Thread(target = func, args=(command, os.path.join(base_path, str(i))))
-            thread.start()
-            threads.append(thread)
-        for thread in threads:
-            thread.join()
-    return do
+from utils import *
+from config import BASE_DIR
 
 
-@time_it
+@calculate_time
 @multiple_threading
-def test_sys_cmd(command, path ):
-    """docstring for test_ls"""
-    os.chdir( path)
-    os.system(command)
+def git_pull(thread_index = -1):
+    repository_path = generate_local_repository_path(thread_index)
+    os.system("git -C %s pull origin master" %(repository_path))
 
 
 if __name__ == '__main__':
-    print test_sys_cmd("git pull origin master")
+    #first we change something in one repository and push to remote
+    sample_thread_index = 0
+    repository_path = generate_local_repository_path(sample_thread_index)
+    os.system("git -C %s pull origin master" %(repository_path))
+    modify_repository_content(sample_thread_index)
+    push_change_to_remote(sample_thread_index, "master")
+
+    #then we go to each local repository and pull from remote
+    total_time = git_pull()
+    print total_time

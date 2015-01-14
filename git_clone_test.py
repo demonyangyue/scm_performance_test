@@ -9,7 +9,6 @@ from utils import *
 @calculate_time
 @multiple_threading
 def git_clone(thread_index = -1):
-    print "git clone %s %d" %(REMOTE_REPOSITORY, thread_index)
     os.system("git clone %s %d" %(REMOTE_REPOSITORY, thread_index))
 
 if __name__ == '__main__':
